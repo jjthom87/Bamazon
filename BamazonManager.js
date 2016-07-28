@@ -40,7 +40,6 @@ inquirer.prompt(requestList).then(function(res){
 		viewLowInventory();
 	} else if (res.choose === 'Add to Inventory') {
 		addToInventory();
-		console.log(" ");
 	} else if (res.choose === 'Add New Product') {
 		addProduct();
 	}
@@ -103,7 +102,8 @@ function addToInventory() {
 									if (err) {
 										throw err
 									}
-								console.log("Your quantity has been updated. Please select 'View Products For Sale' to review");
+								console.log(" ");
+								console.log("Your quantity has been updated. Please select 'View Products For Sale' to review.");
 								})
 						})	
 					}
@@ -144,6 +144,7 @@ function addProduct(){
 				if (err) {
 					throw err
 				}
+				console.log(" ");
 				console.log("The " + results.product + " has been added");
 			})
 		})
