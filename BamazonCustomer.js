@@ -45,7 +45,7 @@ connection.query('SELECT * FROM Products', function(err, results){
 				var chosenItem = results[i];
 				inquirer.prompt(quantityQuestion).then(function(answer2){
 					if (chosenItem.StockQuantity > answer2.quantityPick) {
-						console.log("Your order has been placed");
+						console.log("We have enough in stock. Your order has been placed");
 						connection.query("UPDATE Products SET ? WHERE ?",[{
 						StockQuantity: chosenItem.StockQuantity - answer2.quantityPick }, {id: answer.idPick}], function(err,res){
 							if (err){
