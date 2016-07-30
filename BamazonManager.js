@@ -26,24 +26,24 @@ var requestList = [{
 	name: 'choose'
 }];
 
-// inquirer.prompt(requestList).then(function(res){
-// 	console.log(" ");
-// 	console.log("Welcome " + res.name + ". Your Request Has Been Submitted");
-// 	console.log(" ");
-// 	if(res.choose === 'View Products for Sale') {
-// 		console.log("These are the Items For Sale");
-// 		console.log(" ");
-// 		viewProducts();
-// 	} else if (res.choose === 'View Low Inventory') {
-// 		console.log("These are the Items With Low Inventory");
-// 		console.log(" ")
-// 		viewLowInventory();
-// 	} else if (res.choose === 'Add to Inventory') {
-// 		addToInventory();
-// 	} else if (res.choose === 'Add New Product') {
-// 		addProduct();
-// 	}
-// });
+inquirer.prompt(requestList).then(function(res){
+	console.log(" ");
+	console.log("Welcome " + res.name + ". Your Request Has Been Submitted");
+	console.log(" ");
+	if(res.choose === 'View Products for Sale') {
+		console.log("These are the Items For Sale");
+		console.log(" ");
+		viewProducts();
+	} else if (res.choose === 'View Low Inventory') {
+		console.log("These are the Items With Low Inventory");
+		console.log(" ")
+		viewLowInventory();
+	} else if (res.choose === 'Add to Inventory') {
+		addToInventory();
+	} else if (res.choose === 'Add New Product') {
+		addProduct();
+	}
+});
 
 function viewProducts() {
 	connection.query('SELECT * FROM Products', function(err, res){

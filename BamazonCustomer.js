@@ -46,7 +46,7 @@ connection.query('SELECT MAX(id) FROM Products', function(err, resultz) {
 				[results[i].id, results[i].ProductName, results[i].DepartmentName, results[i].Price, results[i].StockQuantity]
 					);
 				if (table.length == chosen) {
-					console.log(table.toString());
+					return console.log(table.toString());
 					}
 				};
 			})
@@ -60,6 +60,7 @@ function searchAndBuy(){
 		if (err) {
 			throw err;
 		}
+		displayData();
 		inquirer.prompt(idQuestion).then(function(answer){
 			for(var i=0; i < results.length; i++) {
 				if(results[i].id == answer.idPick) {
@@ -89,4 +90,3 @@ function searchAndBuy(){
 		})
 };
 searchAndBuy();
-displayData();
