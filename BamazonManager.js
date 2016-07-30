@@ -1,5 +1,6 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
+var Table = require("cli-table");
 
 var connection = mysql.createConnection({
 	host: "localhost",
@@ -14,6 +15,8 @@ connection.connect(function(err){
 		throw err 
 	}
 });
+
+var table = new Table({ head: ['Product ID', 'Product', 'Department', 'Price', 'Qty in Stock']});
 
 var requestList = [{
 	type: "input",
@@ -46,17 +49,23 @@ inquirer.prompt(requestList).then(function(res){
 });
 
 function viewProducts() {
-	connection.query('SELECT * FROM Products', function(err, res){
-		if (err) {
-			throw err
-		}
-		res.forEach(function(column){
-			console.log("-------------------------");
-			console.log("Item ID: " + column.id);
-			console.log("Item: " + column.ProductName);
-			console.log("Price: $" + column.Price);
-			console.log(column.StockQuantity + " in Stock");
-			connection.end();
+	connection.query('SELECT MAX(id) FROM Products', function(err, resultz) {
+		resultz.forEach(function(columns){
+			var chosen = columns['MAX(id)'];
+			connection.query('SELECT * FROM Products', function(err, results){
+				if (err) {
+					throw err;
+				}
+				for(i=0; i < results.length; i++) {
+					table.push(
+						[results[i].id, results[i].ProductName, results[i].DepartmentName, results[i].Price, results[i].StockQuantity]
+					);
+					if (table.length == chosen) {
+						console.log(table.toString());
+						connection.end();
+					}
+				};
+			})
 		})
 	})
 };
@@ -73,9 +82,9 @@ function viewLowInventory() {
 			console.log("Item: " + res[i].ProductName);
 			console.log("Price: $" + res[i].Price);
 			console.log(res[i].StockQuantity + " in Stock");
-			connection.end();
 			}
 		}
+		connection.end();
 	})
 };
 
@@ -84,10 +93,11 @@ function addToInventory() {
 		if (err) {
 			throw err
 		}
+		for(var i = 0; i < results.length; i++){
 			inquirer.prompt([{
 				type: "list",
 				message: "What product would you like to add inventory to?",
-				choices: ['Mulberries' , 'Blueberries', 'Jareberries', 'Blackberries', 'Strawberries', 'Kale', 'Super Kale', 'Dinosuar Kale', 'Ultra Kale', 'Burger Kale', 'Venison', 'Polar Bear', 'Bengal Tiger', 'Koala Bear', 'Hummingbird'],
+				choices: [],
 				name: "addList"
 			}]).then(function(res){
 				for(var i=0 ; i < results.length; i++){
@@ -108,16 +118,16 @@ function addToInventory() {
 								console.log("Your quantity has been updated. Please select 'View Products For Sale' to review.");
 								connection.end();
 								})
-						})	
+							})	
+						}
 					}
-				}
-			})
+				})
+			}
 		})
 };
 
 
 function addProduct(){
-	this.addition = 18;
 	connection.query('SELECT * FROM Products', function(err, results){
 		if (err) {
 			throw err
@@ -148,7 +158,6 @@ function addProduct(){
 				if (err) {
 					throw err
 				}
-				this.addition++;
 				console.log(" ");
 				console.log("A quantity of " + results.quantity + " for the " + results.product + " has been added")
 				connection.end();
