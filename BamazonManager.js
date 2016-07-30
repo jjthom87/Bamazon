@@ -26,24 +26,24 @@ var requestList = [{
 	name: 'choose'
 }];
 
-inquirer.prompt(requestList).then(function(res){
-	console.log(" ");
-	console.log("Welcome " + res.name + ". Your Request Has Been Submitted");
-	console.log(" ");
-	if(res.choose === 'View Products for Sale') {
-		console.log("These are the Items For Sale");
-		console.log(" ");
-		viewProducts();
-	} else if (res.choose === 'View Low Inventory') {
-		console.log("These are the Items With Low Inventory");
-		console.log(" ")
-		viewLowInventory();
-	} else if (res.choose === 'Add to Inventory') {
-		addToInventory();
-	} else if (res.choose === 'Add New Product') {
-		addProduct();
-	}
-})
+// inquirer.prompt(requestList).then(function(res){
+// 	console.log(" ");
+// 	console.log("Welcome " + res.name + ". Your Request Has Been Submitted");
+// 	console.log(" ");
+// 	if(res.choose === 'View Products for Sale') {
+// 		console.log("These are the Items For Sale");
+// 		console.log(" ");
+// 		viewProducts();
+// 	} else if (res.choose === 'View Low Inventory') {
+// 		console.log("These are the Items With Low Inventory");
+// 		console.log(" ")
+// 		viewLowInventory();
+// 	} else if (res.choose === 'Add to Inventory') {
+// 		addToInventory();
+// 	} else if (res.choose === 'Add New Product') {
+// 		addProduct();
+// 	}
+// });
 
 function viewProducts() {
 	connection.query('SELECT * FROM Products', function(err, res){
@@ -56,6 +56,7 @@ function viewProducts() {
 			console.log("Item: " + column.ProductName);
 			console.log("Price: $" + column.Price);
 			console.log(column.StockQuantity + " in Stock");
+			connection.end();
 		})
 	})
 };
@@ -72,6 +73,7 @@ function viewLowInventory() {
 			console.log("Item: " + res[i].ProductName);
 			console.log("Price: $" + res[i].Price);
 			console.log(res[i].StockQuantity + " in Stock");
+			connection.end();
 			}
 		}
 	})
@@ -104,6 +106,7 @@ function addToInventory() {
 									}
 								console.log(" ");
 								console.log("Your quantity has been updated. Please select 'View Products For Sale' to review.");
+								connection.end();
 								})
 						})	
 					}
@@ -114,6 +117,7 @@ function addToInventory() {
 
 
 function addProduct(){
+	this.addition = 18;
 	connection.query('SELECT * FROM Products', function(err, results){
 		if (err) {
 			throw err
@@ -144,9 +148,13 @@ function addProduct(){
 				if (err) {
 					throw err
 				}
+				this.addition++;
 				console.log(" ");
-				console.log("The " + results.product + " has been added");
+				console.log("A quantity of " + results.quantity + " for the " + results.product + " has been added")
+				connection.end();
 			})
 		})
 	})
 };
+
+
