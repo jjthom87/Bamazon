@@ -70,10 +70,25 @@ function searchAndBuy(){
 								if (err){
 									throw err;
 									}
-							console.log("The Cost of Your Purchase for " + answer2.quantityPick + " " + chosenItem.ProductName + " is $" + sale + ".")
-							console.log("Thank You for Shopping.")
+								console.log("The Cost of Your Purchase for " + answer2.quantityPick + " " + chosenItem.ProductName + " is $" + sale + ".")
+								console.log("Thank You for Shopping.")
+								connection.query("SELECT * FROM Departments", function(err,resi){
+									if (err) {
+										throw err
+									}
+									for (var i = 0; i < resi.length; i++){
+										var totalSaleVar = resi[i];
+										connection.query("UPDATE Departments SET ? WHERE ?",[{
+											TotalSales: sale + totalSaleVar.TotalSales},{DepartmentName: chosenItem.DepartmentName}
+										], function(err, reso){
+											if (err){
+												throw err
+											}
+										})
+									}
 							connection.end();
 								});
+							});
 						} else {
 							console.log("Not enough in stock. Order can not be placed.");
 							console.log("Please check again soon.")
