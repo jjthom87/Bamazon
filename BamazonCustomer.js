@@ -29,6 +29,13 @@ var quantityQuestion = [{
 
 var table = new Table({ head: ['Product ID', 'Product', 'Department', 'Price', 'Qty in Stock']});
 
+function Buyer(){
+	this.sale = '';
+	this.chosenItem = '';
+}
+
+var newBuyer = new Buyer();
+
 function displayData(){
 	connection.query('SELECT MAX(id) FROM Products', function(err, resultz) {
 		resultz.forEach(function(columns){
@@ -60,34 +67,19 @@ function searchAndBuy(){
 		inquirer.prompt(idQuestion).then(function(answer){
 			for(var i=0; i < results.length; i++) {
 				if(results[i].id == answer.idPick) {
-					var chosenItem = results[i];
+					newBuyer.chosenItem = results[i];
 					inquirer.prompt(quantityQuestion).then(function(answer2){
-						if (chosenItem.StockQuantity > answer2.quantityPick) {
-							var sale = (answer2.quantityPick * chosenItem.Price);
+						if (newBuyer.chosenItem.StockQuantity > answer2.quantityPick) {
+							newBuyer.sale = (answer2.quantityPick * newBuyer.chosenItem.Price);
 							console.log("We have enough in stock. Your order has been placed");
 							connection.query("UPDATE Products SET ? WHERE ?",[{
-							StockQuantity: chosenItem.StockQuantity - answer2.quantityPick }, {id: answer.idPick}], function(err,res){
+							StockQuantity: newBuyer.chosenItem.StockQuantity - answer2.quantityPick }, {id: answer.idPick}], function(err,res){
 								if (err){
 									throw err;
 									}
-								console.log("The Cost of Your Purchase for " + answer2.quantityPick + " " + chosenItem.ProductName + " is $" + sale + ".")
-								console.log("Thank You for Shopping.")
-								connection.query("SELECT * FROM Departments", function(err,resi){
-									if (err) {
-										throw err
-									}
-									for (var i = 0; i < resi.length; i++){
-										var totalSaleVar = resi[i];
-										connection.query("UPDATE Departments SET ? WHERE ?",[{
-											TotalSales: sale + totalSaleVar.TotalSales},{DepartmentName: chosenItem.DepartmentName}
-										], function(err, reso){
-											if (err){
-												throw err
-											}
-										})
-									}
-							connection.end();
-								});
+								console.log("The Cost of Your Purchase for " + answer2.quantityPick + " " + newBuyer.chosenItem.ProductName + " is $" + newBuyer.sale + ".")
+								console.log("Thank You for Shopping.");
+								updateSales();
 							});
 						} else {
 							console.log("Not enough in stock. Order can not be placed.");
@@ -100,3 +92,20 @@ function searchAndBuy(){
 		})
 	})
 };
+
+function updateSales(){
+	connection.query("SELECT * FROM Departments", function(err,resi){
+		if (err) {
+			throw err
+		}
+		for (var i = 0; i < resi.length; i++){
+			connection.query("UPDATE Departments SET ? WHERE ?",[{
+				TotalSales: newBuyer.sale + resi[i].TotalSales},{DepartmentName: newBuyer.chosenItem.DepartmentName}
+			], function(err, reso){
+				if (err){
+					throw err
+				}
+			})
+		}
+	});
+}
