@@ -94,18 +94,18 @@ function searchAndBuy(){
 };
 
 function updateSales(){
-	connection.query("SELECT * FROM Departments", function(err,resi){
+	connection.query("SELECT * FROM Departments WHERE ?", {DepartmentName: newBuyer.chosenItem.DepartmentName}, function(err,resi){
 		if (err) {
 			throw err
 		}
-		for (var i = 0; i < resi.length; i++){
-			connection.query("UPDATE Departments SET ? WHERE ?",[{
-				TotalSales: newBuyer.sale + resi[i].TotalSales},{DepartmentName: newBuyer.chosenItem.DepartmentName}
-			], function(err, reso){
+		var parsedSale = parseInt(newBuyer.sale);
+		var parsedTotal = parseInt(resi[0].TotalSales);
+			connection.query("UPDATE Departments SET ? WHERE ?",[{TotalSales: parsedSale + parsedTotal},{DepartmentName: newBuyer.chosenItem.DepartmentName}], 
+			function(err, reso){
 				if (err){
 					throw err
 				}
+				connection.end();
 			})
-		}
 	});
 }
