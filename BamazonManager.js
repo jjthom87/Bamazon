@@ -1,12 +1,18 @@
 var mysql = require('mysql');
 var inquirer = require('inquirer');
 var Table = require("cli-table");
+var events = require('events');
+var request = require('request');
+
+var eventEmitter = new events.EventEmitter();
+
+eventEmitter.setMaxListeners(0);
 
 var connection = mysql.createConnection({
 	host: "localhost",
 	port: 3306,
 	user: "root",
-	password: "Ntho1mas",
+	password: "",
 	database: "Bamazon"
 });
 
@@ -97,7 +103,13 @@ function addToInventory() {
 			inquirer.prompt([{
 				type: "list",
 				message: "What product would you like to add inventory to?",
-				choices: [],
+				choices: request(function(products){
+					var productArray = [];
+					for (var i = 0; i < results.length; i++){
+						productArray.push(results[i].ProductName)
+					}
+					return productArray.setMaxListeners(0);
+				}).setMaxListeners(0),
 				name: "addList"
 			}]).then(function(res){
 				for(var i=0 ; i < results.length; i++){
